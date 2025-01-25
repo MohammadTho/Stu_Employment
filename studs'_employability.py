@@ -8,66 +8,30 @@ Original file is located at
 
 ##DATASET
 """
-
 import streamlit as st
-import os
-import shutil
+import pandas as pd
 
-# Streamlit app to upload kaggle.json file
-def setup_kaggle_api():
-    # File uploader widget for the kaggle.json file
-    kaggle_file = st.file_uploader("Upload your kaggle.json file", type="json")
+# Streamlit app UI for file upload
+st.title("Upload Your Dataset")
+st.write("Please upload your Excel file (.xlsx) containing the data.")
 
-    if kaggle_file is not None:
-        # Save the file in the right location
-        kaggle_path = os.path.expanduser("~/.kaggle/")
-        os.makedirs(kaggle_path, exist_ok=True)
+# File uploader widget for the dataset
+uploaded_file = st.file_uploader("Choose an XLSX file", type=["xlsx"])
 
-        # Save the uploaded file to the correct directory
-        with open(os.path.join(kaggle_path, "kaggle.json"), "wb") as f:
-            f.write(kaggle_file.getbuffer())
+# When the user uploads the file
+if uploaded_file is not None:
+    # Load the Excel file into a pandas DataFrame
+    df = pd.read_excel(uploaded_file)
 
-        # Set the correct permissions (this may be optional in Streamlit depending on your environment)
-        os.chmod(os.path.join(kaggle_path, "kaggle.json"), 0o600)
+    # Show the first few rows of the DataFrame
+    st.write("Here is a preview of your data:")
+    st.dataframe(df)
 
-        st.success("Kaggle API key successfully set up!")
-    else:
-        st.info("Please upload your kaggle.json file to continue.")
+    # Display basic info about the dataset
+    st.write("Basic Information about the dataset:")
+    st.write(df.info())
 
-# Call the function to set up the Kaggle API key
-setup_kaggle_api()
-
-# Your Streamlit app's other logic (e.g., fetching datasets from Kaggle, etc.)
-# For example, if you're downloading a dataset from Kaggle, you could call:
-# os.system("kaggle datasets download -d <dataset_name>")  # Replace <dataset_name> with the actual dataset name
-
-"""##Installing Kaggle API"""
-
-!pip install kagglehub streamlit
-!pip install kagglehub
-print("Kaggle API Installed")
-
-from google.colab import files
-files.upload()
-# This will prompt you to upload your kaggle.json file
-
-#Move the key to the correct location
-!mkdir ~/.kaggle
-!mv kaggle.json ~/.kaggle/
-!chmod 600 ~/.kaggle/kaggle.json
-
-import kagglehub
-
-# Download the latest version of the dataset
-path = kagglehub.dataset_download("anashamoutni/students-employability-dataset")
-
-print("Path to dataset files:", path)
-
-#Verify the download
-import os
-
-# List all files in the dataset folder
-print(os.listdir(path))
+# Optionally, you could add more functionality based on the uploaded file (e.g., data analysis or visualization)
 
 """##Load the Dataset
 
