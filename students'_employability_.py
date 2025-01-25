@@ -237,6 +237,8 @@ lr_model.fit(X_train, y_train)
 lr_predictions = lr_model.predict(X_test)
 lr_accuracy = accuracy_score(y_test, lr_predictions)
 
+
+
 # Print the results
 print(f"Decision Tree Accuracy: {dt_accuracy:.4f}")
 print(f"Random Forest Accuracy: {rf_accuracy:.4f}")
@@ -261,6 +263,17 @@ print(confusion_matrix(y_test, rf_predictions))
 
 print("\nLogistic Regression Confusion Matrix:")
 print(confusion_matrix(y_test, lr_predictions))
+
+import joblib
+
+# Save the trained RandomForest model
+joblib.dump(rf_model, 'random_forest_model.pkl')
+
+# Save the scaler
+joblib.dump(scaler, 'scaler.pkl')
+
+# Save the label encoder
+joblib.dump(le, 'label_encoder.pkl')
 
 """##Adding Evaluation Metrics in a Table"""
 
@@ -449,22 +462,22 @@ plot_decision_boundary(rf_model_2D, X_2D_train, y_2D_train, "Random Forest Decis
 !pip install streamlit
 print("\nstreamlit installed successfully")
 
+import joblib
+
+# Load the trained model, scaler, and label encoder
+rf_model = joblib.load('random_forest_model.pkl')
+scaler = joblib.load('scaler.pkl')
+le = joblib.load('label_encoder.pkl')
+
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+import joblib
 
-# Load the trained model and necessary preprocessing tools
-# Example, assuming you've trained the Random Forest model and scaler in previous steps
-# You'd typically load the model using joblib or pickle after training it in the notebook
-
-# Define your preprocessing
-scaler = MinMaxScaler()
-le = LabelEncoder()
-
-# You can load the trained model here
-# For example: rf_model = joblib.load('random_forest_model.pkl')
+# Load pre-trained model and scalers
+rf_model = joblib.load('random_forest_model.pkl')
+scaler = joblib.load('scaler.pkl')
+le = joblib.load('label_encoder.pkl')
 
 # Streamlit App Layout
 st.title("Student Employability Prediction")
@@ -473,7 +486,6 @@ st.write("This application predicts employability class based on communication s
 # Input fields for the features (two features used for this example)
 communication_skills = st.slider("Communication Skills Total", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 confidence_alertness = st.slider("Confidence and Alertness", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
-
 
 # Prediction button
 if st.button('Predict'):
